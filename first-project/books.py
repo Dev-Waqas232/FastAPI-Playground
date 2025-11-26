@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from typing import Optional
 
 app = FastAPI()
@@ -14,13 +14,13 @@ BOOKS = [
 
 
 @app.get("/books")
-async def read_all_books(category: Optional[str] = None):
-    if not category:
+async def read_all_books(author: Optional[str] = None):
+    if not author:
         return BOOKS
 
     filtered_books = []
     for book in BOOKS:
-        if book.get("category").casefold() == category.casefold():
+        if book.get("author").casefold() == author.casefold():
             filtered_books.append(book)
 
     return filtered_books
@@ -32,3 +32,9 @@ async def read_book(book_title: str):
         if book.get('title').casefold() == book_title.casefold():
             return book
     return {"error": "Book not Found"}
+
+
+@app.post("/books/create-book")
+async def create_book(new_book=Body()):
+    BOOKS.append(new_book)
+    return BOOKS
